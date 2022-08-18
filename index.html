@@ -1,0 +1,51 @@
+<html>
+<head>
+<script type="text/javascript" src="assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="assets/js/odontogram.js?v=1.6.0.20"></script>
+<style>
+p{margin:5px 0}
+button{padding:5px 10px}
+.btn-cmd{width:1060px;padding-left:20px}  
+.GFG{transform: scale(-1, 1);-moz-transform: scale(-1, 1);-webkit-transform: scale(-1, 1);-o-transform: scale(-1, 1);-ms-transform: scale(-1, 1);transform: scale(-1, 1);}
+</style>
+</head>
+<body>
+<div class="cmd-bars btn-cmd">
+<span style="margin:5px"><button onclick="odt.new()"> New</button></span>
+<span style="margin:5px"><button onclick="odt.clear()"> Clear </button></span>
+<span style="margin:5px"><button onclick="odt.undo()"> Undo </button></span>
+<span style="margin:5px"><button onclick="odt.redo()"> Redo </button></span>
+<span style="margin:5px"><button onclick="saveImg()"> Save Image </button></span>
+</div>
+<div class="pid-odontogram"></div>
+<div class="cmd btn-cmd" style="width:100%"></div>
+<br/>
+<div class="cmd-message" style="padding:10px; font-weight: bold;"></div>
+<script type="text/javascript">
+var odt;
+var saveImg = function(){
+	odt.getPng(function(img){ 
+		/* //window.open(img, '_blank'); */
+		$.post('save.php', {imagedata: img}, function(result){
+			var res=JSON.parse(result);
+			if(res.success){
+				window.open(res.filename, '_blank');
+			}
+		})
+	})
+}
+$(function(){
+	odt= new odontogram({pid:'pid',obj:'odontogram',message:'cmd-message'});
+	var cmd=odt.getCommand(),btn='',spr='<div style="width:220px; float:left">\n';	
+	btn+=spr;
+	$.each(cmd,function(k,v){
+		//		console.log(k,v);
+		if(k>0) btn+='<p style="margin:5px"><button onclick="odt.setcommand('+k+')"> '+v+' </button></p>';
+		if((k==0)||(k==6)||(k==10)||(k==14)||(k==18)) btn+='</div>'+spr;
+	});
+	btn+='</div>';
+	$('.cmd').append(btn);
+})
+</script>
+</body>
+</html>
